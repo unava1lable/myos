@@ -9,4 +9,8 @@ panic = "abort"
 [profile.release]
 panic = "abort"
 
+[package.metadata.bootimage]
+build-command = ["xbuild"]
+
 [dependencies]
+bootloader = "0.9.3"
