@@ -16,6 +16,23 @@ lazy_static!{
 	});
 }
 
+#[macro_export]
+macro_rules! print {
+	($($arg: tt)*) => ($crate::vga::_print(format_args!($($arg)*)));
+}
+
+#[macro_export]
+macro_rules! println {
+	() => ($crate::print!("\n"));
+	($($arg: tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
+}
+
+#[doc(hidden)]
+pub fn _print(args: fmt::Arguments) {
+	use core::fmt::Write;
+	WRITER.lock().write_fmt(args).unwrap();
+}
+
 #[allow(dead_code)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u8)]
@@ -92,7 +109,7 @@ impl Writer {
 		for byte in s.bytes() {
 			match byte {
 				// 可打印的ASCII字符和换行符\n
-				0x20..=0x73 | b'\n' => self.write_byte(byte),
+				0x20..=0x7e | b'\n' => self.write_byte(byte),
 				// 不可打印的ASCII字符用黄色方块填充。
 				_ => self.write_byte(0xfe),
 			}
