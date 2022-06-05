@@ -17,7 +17,7 @@ pub extern "C" fn _start() -> ! {
     test_main();
 
     println!("It did not crash!");
-    loop {}
+    myos::hlt_loop();
 }
 
 // 非测试模式下的panic
@@ -25,7 +25,7 @@ pub extern "C" fn _start() -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    loop{}
+    myos::hlt_loop();
 }
 
 // 测试模式下的panic
