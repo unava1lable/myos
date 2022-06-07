@@ -7,7 +7,7 @@ const BUFFER_WIDTH: usize = 80;
 const BUFFER_HEIGHT: usize = 25;
 
 // lazy_static!实现静态变量运行时初始化
-// spin::Mutex实现同步的内部可变性，一把自旋锁
+// spin::Mutex实现同步的内部可变性，防止数据竞争，一把自旋锁
 lazy_static!{
 	pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
 		column_position: 0,
