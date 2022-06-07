@@ -6,7 +6,6 @@
 
 extern crate alloc;
 
-use alloc::boxed::Box;
 use core::panic::PanicInfo;
 use bootloader::{ BootInfo, entry_point };
 use myos::println;
@@ -14,20 +13,36 @@ use myos::println;
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    use myos::memory;
-    use myos::memory::BootInfoFrameAllocator;
-    use x86_64::structures::paging::Size4KiB;
-    use x86_64::{structures::paging::Page, VirtAddr};
+    use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
+    use x86_64::VirtAddr;
+    use myos::allocator;
+    use myos::memory::{self, BootInfoFrameAllocator};
 
-    println!("Hello, World{}", "!");
+    println!("Hello World{}", "!");
     myos::init();
 
+    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+    let mut mapper = unsafe { memory::init(phys_mem_offset) };
     let mut frame_allocator = unsafe {
         BootInfoFrameAllocator::init(&boot_info.memory_map)
     };
-    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    let mut mapper = unsafe { memory::init(phys_mem_offset) };
-    let x = Box::new(41);
+    allocator::init_heap(&mut mapper, &mut frame_allocator)
+        .expect("heap initialization failed");
+
+    let heap_value = Box::new(41);
+    println!("heap_value as {:p}", heap_value);
+
+    let mut vec = Vec::new();
+    for i in 0..500 {
+        vec.push(i);
+    }
+    println!("vec at {:p}", vec.as_slice());
+
+    let reference_counted = Rc::new(vec![1, 2, 3]);
+    let cloned_reference = reference_counted.clone();
+    println!("current reference count is {}", Rc::strong_count(&cloned_reference));
+    core::mem::drop(reference_counted);
+    println!("reference count is {} now", Rc::strong_count(&cloned_reference));
     #[cfg(test)]
     test_main();
 
