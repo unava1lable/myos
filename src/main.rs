@@ -9,6 +9,7 @@ extern crate alloc;
 use core::panic::PanicInfo;
 use bootloader::{ BootInfo, entry_point };
 use myos::println;
+use myos::task::keyboard;
 use myos::task::{Task, simple_executor::SimpleExecutor};
 
 entry_point!(kernel_main);
@@ -31,6 +32,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     let mut executor = SimpleExecutor::new();
     executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(keyboard::print_keypresses()));
     executor.run();
     
     #[cfg(test)]
