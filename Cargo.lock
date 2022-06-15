@@ -127,6 +127,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "60302e4db3a61da70c0cb7991976248362f30319e88850c487b9b95bbf059e00"
 
 [[package]]
+name = "memoffset"
+version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5aa361d4faea93603064a027415f07bd8e1d5c88c9fbf68bf56a285428fd79ce"
+dependencies = [
+ "autocfg",
+]
+
+[[package]]
 name = "myos"
 version = "0.1.0"
 dependencies = [
@@ -136,6 +145,7 @@ dependencies = [
  "futures-util",
  "lazy_static",
  "linked_list_allocator",
+ "memoffset",
  "pc-keyboard",
  "pic8259",
  "spin 0.9.3",
